@@ -9,8 +9,6 @@ jQuery ($) ->
 
   ctx = canvas.getContext('2d')
 
-  
-
   mouse =
     down: false
     x: 0
@@ -18,14 +16,14 @@ jQuery ($) ->
     
   config = 
     interval: 20
+
   inPopulation = 10
+
   window.track = []
-
-  img = new Image()
-  img.src = "line.png"
-
   window.pause = false
   window.drawing = false
+
+  #buttons
   $(document).on 'keydown', (event) ->
     if event.keyCode == 80
       window.pause = !window.pause
@@ -85,8 +83,6 @@ jQuery ($) ->
       for i in [0...window.track.length-1]
         ctx.lineTo window.track[i+1].x, window.track[i+1].y
       ctx.stroke()
-      
-        
       ctx.restore()  
 
   rand = (n) ->
@@ -96,6 +92,8 @@ jQuery ($) ->
   population = 1
   objects = []
   objects[1] = []
+
+  # # # # # # # # # # # # # LF class
   class LF
     @x: 558
     @y: 752
@@ -108,9 +106,8 @@ jQuery ($) ->
       else
         this.weights = weights
         for i in [0...this.weights.length]
-          this.weights[i]+=rand(0.5)
-        
-      #console.log this.weights
+          if Math.random() > 0.9
+            this.weights[i]+=rand(1)
       this.x = LF.x
       this.y = LF.y
       this.deg = LF.deg
@@ -167,11 +164,6 @@ jQuery ($) ->
         this.penalty += (20000-this.time)/10 if (20000-this.time)/10 > 0
         #console.log this.penalty
       this.time += config.interval
-      
-        
-
-      
-      
       ctx.restore()
     move: ->
       this.x += (this.speed*config.interval/1000)*Math.cos(this.deg)
@@ -179,29 +171,24 @@ jQuery ($) ->
       for i in [0...this.sensors.length]
         if this.sensors[i] == 1
           this.deg += this.weights[i]*Math.PI/180
-  
 
-  
-  
-  
+  # # # # # # # # # # # # # end class
 
   setInterval (-> draw()),  50 
 
-  
-
+  #loop function
   draw = () ->
     ctx.clearRect(0, 0,can.w, can.h)
-    #ctx.drawImage img, 0, 0
     drawTrack()
     if objects[1].length > 0
-      objects[generation][objects[generation].length-1].draw()
+      last = objects[generation][objects[generation].length-1]
+      last.draw()
       
       if !window.pause and window.start
-        objects[generation][objects[generation].length-1].getData()
-        objects[generation][objects[generation].length-1].move()
-
-        if !objects[generation][objects[generation].length-1].stop
-          objects[generation][objects[generation].length-1].move()
+        last.getData()
+        last.move()
+        if !last.stop
+          last.move()
         else
           population++
           generation = Math.ceil(population/inPopulation)
@@ -213,22 +200,17 @@ jQuery ($) ->
               errsum += object.penalty
               if object.penalty > worst
                 worst = object.penalty
-            #console.log 'errsum:'+ errsum
-
             probsums = []
             probs = []
             j = 0
             for object in objects[generation-1]
               object.prob = (worst-object.penalty+1)/(errsum+1)*100
-              #console.log 'pen:'+object.penalty+' prob:'+object.prob+' errsum:'+errsum
               probs[j] = object.prob
               probsums[j] = 0
               for i in [0..j]
                 probsums[j] += objects[generation-1][i].prob
               j++
-            #console.log probs
-            #console.log probsums
-            randNum =  Math.random()*probsums[probsums.length-1]
+            randNum  =  Math.random()*probsums[probsums.length-1]
             randNum2 =  Math.random()*probsums[probsums.length-1]
             for i in [0...probsums.length]
               if randNum < probsums[i]
@@ -246,14 +228,12 @@ jQuery ($) ->
                   break
             parent1 = objects[generation-1][parent1index]
             parent2 = objects[generation-1][parent2index]
-            #console.log 'p1 penalty:'+parent1.penalty+ ' p2 penalty:'+parent2.penalty
             randBorder = Math.round(Math.random()*5)+2
             newW = []
             for i in [0...randBorder]
               newW[i] = objects[generation-1][parent1index].weights[i]
             for i in [randBorder...9]
               newW[i] = objects[generation-1][parent2index].weights[i]
-
             if !objects[generation]
               objects[generation] = []
             objects[generation].push(new LF(newW))

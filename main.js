@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var LF, can, canvas, config, ctx, draw, drawTrack, generation, img, inPopulation, mouse, objects, population, rand;
+    var LF, can, canvas, config, ctx, draw, drawTrack, generation, inPopulation, mouse, objects, population, rand;
     canvas = document.getElementById('can');
     can = {
       w: 800,
@@ -19,8 +19,6 @@
     };
     inPopulation = 10;
     window.track = [];
-    img = new Image();
-    img.src = "line.png";
     window.pause = false;
     window.drawing = false;
     $(document).on('keydown', function(event) {
@@ -126,7 +124,9 @@
         } else {
           this.weights = weights;
           for (i = _i = 0, _ref = this.weights.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-            this.weights[i] += rand(0.5);
+            if (Math.random() > 0.9) {
+              this.weights[i] += rand(1);
+            }
           }
         }
         this.x = LF.x;
@@ -217,16 +217,17 @@
       return draw();
     }), 50);
     return draw = function() {
-      var errsum, i, j, newW, object, parent1, parent1index, parent2, parent2index, probs, probsums, randBorder, randNum, randNum2, worst, _i, _j, _k, _l, _len, _len1, _m, _n, _o, _p, _ref, _ref1, _ref2, _ref3, _ref4;
+      var errsum, i, j, last, newW, object, parent1, parent1index, parent2, parent2index, probs, probsums, randBorder, randNum, randNum2, worst, _i, _j, _k, _l, _len, _len1, _m, _n, _o, _p, _ref, _ref1, _ref2, _ref3, _ref4;
       ctx.clearRect(0, 0, can.w, can.h);
       drawTrack();
       if (objects[1].length > 0) {
-        objects[generation][objects[generation].length - 1].draw();
+        last = objects[generation][objects[generation].length - 1];
+        last.draw();
         if (!window.pause && window.start) {
-          objects[generation][objects[generation].length - 1].getData();
-          objects[generation][objects[generation].length - 1].move();
-          if (!objects[generation][objects[generation].length - 1].stop) {
-            return objects[generation][objects[generation].length - 1].move();
+          last.getData();
+          last.move();
+          if (!last.stop) {
+            return last.move();
           } else {
             population++;
             generation = Math.ceil(population / inPopulation);
