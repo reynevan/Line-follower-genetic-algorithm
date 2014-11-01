@@ -82,16 +82,20 @@ jQuery ($) ->
       objects[1][0].deg = LF.deg
     mouse.x = event.pageX
     mouse.y = event.pageY
+
   drawTrack = () ->
     if window.track.length > 1 
       ctx.save()
       ctx.lineWidth = 10
+      ctx.lineJoin = "round"
       ctx.lineCap = 'butt'
       ctx.beginPath()
       ctx.moveTo window.track[0].x, window.track[0].y
       for i in [0...window.track.length-1]
         ctx.lineTo window.track[i+1].x, window.track[i+1].y
+
       ctx.stroke()
+      ctx.closePath()
       ctx.restore()  
 
   rand = (n) ->

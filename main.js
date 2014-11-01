@@ -105,6 +105,7 @@
       if (window.track.length > 1) {
         ctx.save();
         ctx.lineWidth = 10;
+        ctx.lineJoin = "round";
         ctx.lineCap = 'butt';
         ctx.beginPath();
         ctx.moveTo(window.track[0].x, window.track[0].y);
@@ -112,6 +113,7 @@
           ctx.lineTo(window.track[i + 1].x, window.track[i + 1].y);
         }
         ctx.stroke();
+        ctx.closePath();
         return ctx.restore();
       }
     };
