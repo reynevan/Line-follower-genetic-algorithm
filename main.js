@@ -66,6 +66,12 @@
       mouse.down = true;
       mouse.x = event.pageX;
       mouse.y = event.pageY;
+      if (window.drawing) {
+        track.push({
+          x: mouse.x,
+          y: mouse.y
+        });
+      }
       if (window.placing === 1) {
         LF.x = mouse.x;
         LF.y = mouse.y;
@@ -81,8 +87,6 @@
       return mouse.down = false;
     });
     $('#can').on('mousemove', function(event) {
-      mouse.x = event.pageX;
-      mouse.y = event.pageY;
       if (mouse.down && window.drawing) {
         track.push({
           x: mouse.x,
@@ -91,8 +95,10 @@
       }
       if (window.placing === 2) {
         LF.deg = Math.atan2(mouse.y - LF.y, mouse.x - LF.x);
-        return objects[1][0].deg = LF.deg;
+        objects[1][0].deg = LF.deg;
       }
+      mouse.x = event.pageX;
+      return mouse.y = event.pageY;
     });
     drawTrack = function() {
       var i, _i, _ref;
@@ -201,7 +207,7 @@
           }
         }
         this.time += config.interval;
-        if (this.time > 1000 * 60 && penalty > 50 && window.infinity) {
+        if (this.time > 1000 * 60 && this.penalty > 50 && window.infinity) {
           this.stop = true;
         }
         return ctx.restore();

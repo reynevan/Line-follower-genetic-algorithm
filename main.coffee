@@ -59,6 +59,8 @@ jQuery ($) ->
     mouse.down = true
     mouse.x = event.pageX
     mouse.y = event.pageY
+    if window.drawing
+      track.push {x: mouse.x, y: mouse.y}
     if window.placing == 1
       LF.x = mouse.x
       LF.y = mouse.y
@@ -72,14 +74,14 @@ jQuery ($) ->
   $('#can').on 'mouseup', (event) ->
     mouse.down = false
   $('#can').on 'mousemove', (event) ->
-    mouse.x = event.pageX
-    mouse.y = event.pageY
+    
     if mouse.down and window.drawing
       track.push {x: mouse.x, y: mouse.y}
     if window.placing == 2
       LF.deg = Math.atan2 mouse.y-LF.y, mouse.x-LF.x
       objects[1][0].deg = LF.deg
-
+    mouse.x = event.pageX
+    mouse.y = event.pageY
   drawTrack = () ->
     if window.track.length > 1 
       ctx.save()
@@ -173,7 +175,7 @@ jQuery ($) ->
         this.penalty += (20000-this.time)/10 if (20000-this.time)/10 > 0
         #console.log this.penalty
       this.time += config.interval
-      if this.time > 1000*60 and penalty > 50 and window.infinity
+      if this.time > 1000*60 and this.penalty > 50 and window.infinity
         this.stop = true
       ctx.restore()
     move: ->
