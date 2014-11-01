@@ -231,7 +231,7 @@
           } else {
             population++;
             generation = Math.ceil(population / inPopulation);
-            $('.info').text('Generation:' + generation + ' Individual:' + population % 10);
+            $('.info').text('Generation:' + generation + ' Individual:' + population % inPopulation);
             if (generation > 1) {
               errsum = 0;
               worst = 0;
