@@ -9,6 +9,7 @@
     canvas.width = can.w;
     canvas.height = can.h;
     ctx = canvas.getContext('2d');
+    window.infinity = true;
     mouse = {
       down: false,
       x: 0,
@@ -31,6 +32,13 @@
       population = 1;
       generation = 1;
       return inPopulation = $(this).val();
+    });
+    $('#infinity').on('change', function() {
+      if ($(this).prop('checked')) {
+        return window.infinity = true;
+      } else {
+        return window.infinity = false;
+      }
     });
     $('#btn-pause').on('click', function() {
       return window.pause = !window.pause;
@@ -132,7 +140,7 @@
         this.x = LF.x;
         this.y = LF.y;
         this.deg = LF.deg;
-        this.speed = 250;
+        this.speed = 130;
         this.penalty = 0;
         this.errCount = 0;
         this.stop = false;
@@ -176,6 +184,7 @@
             ctx.fillRect(x0, y0, 1, 1);
             if (i === center) {
               this.penalty += 1;
+              console.log(this.penalty);
             }
           } else {
             this.sensors[i] = 0;
@@ -192,6 +201,9 @@
           }
         }
         this.time += config.interval;
+        if (this.time > 1000 * 60 && penalty > 50 && window.infinity) {
+          this.stop = true;
+        }
         return ctx.restore();
       };
 
@@ -215,7 +227,7 @@
     })();
     setInterval((function() {
       return draw();
-    }), 50);
+    }), config.interval);
     return draw = function() {
       var errsum, i, j, last, newW, object, parent1, parent1index, parent2, parent2index, probs, probsums, randBorder, randNum, randNum2, worst, _i, _j, _k, _l, _len, _len1, _m, _n, _o, _p, _ref, _ref1, _ref2, _ref3, _ref4;
       ctx.clearRect(0, 0, can.w, can.h);

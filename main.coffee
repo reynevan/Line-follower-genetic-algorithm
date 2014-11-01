@@ -9,6 +9,8 @@ jQuery ($) ->
 
   ctx = canvas.getContext('2d')
 
+  window.infinity = true
+
   mouse =
     down: false
     x: 0
@@ -31,6 +33,11 @@ jQuery ($) ->
     population = 1
     generation = 1
     inPopulation = $(this).val()
+  $('#infinity').on 'change', () ->
+    if $(this).prop('checked')
+      window.infinity = true
+    else
+      window.infinity = false
   $('#btn-pause').on 'click', () ->
     window.pause = !window.pause
   $('#btn-next').on 'click', () ->
@@ -111,7 +118,7 @@ jQuery ($) ->
       this.x = LF.x
       this.y = LF.y
       this.deg = LF.deg
-      this.speed = 250
+      this.speed = 130
       this.penalty = 0
       this.errCount = 0
       this.stop = false
@@ -153,6 +160,8 @@ jQuery ($) ->
           ctx.fillRect x0,y0,1,1
           if i == center
             this.penalty += 1
+            console.log this.penalty
+
         else #biołe
           this.sensors[i] = 0
           whitePixels++
@@ -164,6 +173,8 @@ jQuery ($) ->
         this.penalty += (20000-this.time)/10 if (20000-this.time)/10 > 0
         #console.log this.penalty
       this.time += config.interval
+      if this.time > 1000*60 and penalty > 50 and window.infinity
+        this.stop = true
       ctx.restore()
     move: ->
       this.x += (this.speed*config.interval/1000)*Math.cos(this.deg)
@@ -174,7 +185,7 @@ jQuery ($) ->
 
   # # # # # # # # # # # # # end class
 
-  setInterval (-> draw()),  50 
+  setInterval (-> draw()),  config.interval 
 
   #loop function
   draw = () ->
