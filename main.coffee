@@ -114,6 +114,7 @@ jQuery ($) ->
     constructor: (weights) ->
       console.log 'population:'+population+' gen:'+generation
       this.sensors = [0,0,0,0,0,0,0,0,0]
+      this.sensors0 = [0,0,0,0,0,0,0,0,0]
       if !weights
         this.weights = [rand(6), rand(6), rand(6), rand(6), rand(6), rand(6), rand(6), rand(6), rand(6)]
       else
@@ -123,8 +124,10 @@ jQuery ($) ->
             this.weights[i]+=rand(1)
       this.x = LF.x
       this.y = LF.y
+      this.x0 = LF.x
+      this.y0 = LF.y
       this.deg = LF.deg
-      this.speed = 130
+      this.speed = 80
       this.penalty = 0
       this.errCount = 0
       this.stop = false
@@ -143,6 +146,8 @@ jQuery ($) ->
       ctx.beginPath()
       ctx.moveTo this.x+20*Math.sin(this.deg)+this.len*Math.cos(this.deg), this.y-20*Math.cos(this.deg)+this.len*Math.sin(this.deg)
       ctx.lineTo this.x-20*Math.sin(this.deg)+this.len*Math.cos(this.deg), this.y+20*Math.cos(this.deg)+this.len*Math.sin(this.deg)
+      ctx.moveTo this.x+20*Math.sin(this.deg)+(this.len-1)*Math.cos(this.deg), this.y-20*Math.cos(this.deg)+(this.len-1)*Math.sin(this.deg)
+      ctx.lineTo this.x-20*Math.sin(this.deg)+(this.len-1)*Math.cos(this.deg), this.y+20*Math.cos(this.deg)+(this.len-1)*Math.sin(this.deg)
       ctx.stroke()
       ctx.closePath()
 
@@ -158,26 +163,25 @@ jQuery ($) ->
       for i in [0...this.sensors.length]
         x0 = this.x+20*Math.sin(this.deg)+this.len*Math.cos(this.deg)-Math.sin(this.deg)*i*40/(this.sensors.length-1)
         y0 = this.y-20*Math.cos(this.deg)+this.len*Math.sin(this.deg)+Math.cos(this.deg)*i*40/(this.sensors.length-1)
+        x01 = this.x+20*Math.sin(this.deg)+(this.len-1)*Math.cos(this.deg)-Math.sin(this.deg)*i*40/(this.sensors.length-1)
+        y01 = this.y-20*Math.cos(this.deg)+(this.len-1)*Math.sin(this.deg)+Math.cos(this.deg)*i*40/(this.sensors.length-1)
         x = x0+(3*Math.cos(this.deg))
         y = y0+(3*Math.sin(this.deg))
         pixel = ctx.getImageData x, y, 1, 1
         if pixel.data[3] > 10 #czarne
           this.sensors[i] = 1
           ctx.fillRect x0,y0,1,1
+          ctx.fillRect x01,y01,1,1
           if i == center
             this.penalty += 1
-            console.log this.penalty
-
         else #biołe
           this.sensors[i] = 0
           whitePixels++
-        
       if whitePixels == this.sensors.length
         this.errCount++
-      if this.errCount > 5
+      if this.errCount > 15
         this.stop = true
         this.penalty += (20000-this.time)/10 if (20000-this.time)/10 > 0
-        #console.log this.penalty
       this.time += config.interval
       if this.time > 1000*60 and this.penalty > 50 and window.infinity
         this.stop = true
@@ -185,9 +189,20 @@ jQuery ($) ->
     move: ->
       this.x += (this.speed*config.interval/1000)*Math.cos(this.deg)
       this.y += (this.speed*config.interval/1000)*Math.sin(this.deg)
+      this.x = 0.8*this.x+0.2*this.x0
+      this.y = 0.8*this.y+0.2*this.y0
+      this.x0 = this.x
+      this.y0 = this.y
+      degSum = 0
+      
       for i in [0...this.sensors.length]
         if this.sensors[i] == 1
-          this.deg += this.weights[i]*Math.PI/180
+          degSum += this.weights[i]*Math.PI/180
+        this.sensors0[i] = this.sensors[i]
+      
+      degSum = 3*Math.PI/180 if degSum > 3*Math.PI/180
+      degSum = -3*Math.PI/180 if degSum < -3*Math.PI/180 
+      this.deg += degSum
 
   # # # # # # # # # # # # # end class
 
