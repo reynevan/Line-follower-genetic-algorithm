@@ -135,6 +135,7 @@
         var i, _i, _ref;
         console.log('population:' + population + ' gen:' + generation);
         this.sensors = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        this.sensors0 = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         if (!weights) {
           this.weights = [rand(6), rand(6), rand(6), rand(6), rand(6), rand(6), rand(6), rand(6), rand(6)];
         } else {
@@ -147,8 +148,10 @@
         }
         this.x = LF.x;
         this.y = LF.y;
+        this.x0 = LF.x;
+        this.y0 = LF.y;
         this.deg = LF.deg;
-        this.speed = 130;
+        this.speed = 80;
         this.penalty = 0;
         this.errCount = 0;
         this.stop = false;
@@ -167,13 +170,15 @@
         ctx.beginPath();
         ctx.moveTo(this.x + 20 * Math.sin(this.deg) + this.len * Math.cos(this.deg), this.y - 20 * Math.cos(this.deg) + this.len * Math.sin(this.deg));
         ctx.lineTo(this.x - 20 * Math.sin(this.deg) + this.len * Math.cos(this.deg), this.y + 20 * Math.cos(this.deg) + this.len * Math.sin(this.deg));
+        ctx.moveTo(this.x + 20 * Math.sin(this.deg) + (this.len - 1) * Math.cos(this.deg), this.y - 20 * Math.cos(this.deg) + (this.len - 1) * Math.sin(this.deg));
+        ctx.lineTo(this.x - 20 * Math.sin(this.deg) + (this.len - 1) * Math.cos(this.deg), this.y + 20 * Math.cos(this.deg) + (this.len - 1) * Math.sin(this.deg));
         ctx.stroke();
         ctx.closePath();
         return ctx.restore();
       };
 
       LF.prototype.getData = function() {
-        var center, i, pixel, whitePixels, x, x0, y, y0, _i, _ref;
+        var center, i, pixel, whitePixels, x, x0, x01, y, y0, y01, _i, _ref;
         ctx.save();
         ctx.fillStyle = '#f00';
         center = Math.ceil(this.sensors.length / 2);
@@ -184,15 +189,17 @@
         for (i = _i = 0, _ref = this.sensors.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
           x0 = this.x + 20 * Math.sin(this.deg) + this.len * Math.cos(this.deg) - Math.sin(this.deg) * i * 40 / (this.sensors.length - 1);
           y0 = this.y - 20 * Math.cos(this.deg) + this.len * Math.sin(this.deg) + Math.cos(this.deg) * i * 40 / (this.sensors.length - 1);
+          x01 = this.x + 20 * Math.sin(this.deg) + (this.len - 1) * Math.cos(this.deg) - Math.sin(this.deg) * i * 40 / (this.sensors.length - 1);
+          y01 = this.y - 20 * Math.cos(this.deg) + (this.len - 1) * Math.sin(this.deg) + Math.cos(this.deg) * i * 40 / (this.sensors.length - 1);
           x = x0 + (3 * Math.cos(this.deg));
           y = y0 + (3 * Math.sin(this.deg));
           pixel = ctx.getImageData(x, y, 1, 1);
           if (pixel.data[3] > 10) {
             this.sensors[i] = 1;
             ctx.fillRect(x0, y0, 1, 1);
+            ctx.fillRect(x01, y01, 1, 1);
             if (i === center) {
               this.penalty += 1;
-              console.log(this.penalty);
             }
           } else {
             this.sensors[i] = 0;
@@ -202,7 +209,7 @@
         if (whitePixels === this.sensors.length) {
           this.errCount++;
         }
-        if (this.errCount > 5) {
+        if (this.errCount > 15) {
           this.stop = true;
           if ((20000 - this.time) / 10 > 0) {
             this.penalty += (20000 - this.time) / 10;
@@ -216,18 +223,27 @@
       };
 
       LF.prototype.move = function() {
-        var i, _i, _ref, _results;
+        var degSum, i, _i, _ref;
         this.x += (this.speed * config.interval / 1000) * Math.cos(this.deg);
         this.y += (this.speed * config.interval / 1000) * Math.sin(this.deg);
-        _results = [];
+        this.x = 0.8 * this.x + 0.2 * this.x0;
+        this.y = 0.8 * this.y + 0.2 * this.y0;
+        this.x0 = this.x;
+        this.y0 = this.y;
+        degSum = 0;
         for (i = _i = 0, _ref = this.sensors.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
           if (this.sensors[i] === 1) {
-            _results.push(this.deg += this.weights[i] * Math.PI / 180);
-          } else {
-            _results.push(void 0);
+            degSum += this.weights[i] * Math.PI / 180;
           }
+          this.sensors0[i] = this.sensors[i];
         }
-        return _results;
+        if (degSum > 3 * Math.PI / 180) {
+          degSum = 3 * Math.PI / 180;
+        }
+        if (degSum < -3 * Math.PI / 180) {
+          degSum = -3 * Math.PI / 180;
+        }
+        return this.deg += degSum;
       };
 
       return LF;
