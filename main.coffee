@@ -122,6 +122,8 @@ jQuery ($) ->
         for i in [0...this.weights.length]
           if Math.random() > 0.95
             this.weights[i] = rand(6)
+            console.log 'MUTATION :D'
+      console.log this.weights
       this.x = LF.x
       this.y = LF.y
       this.x0 = LF.x
