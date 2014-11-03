@@ -147,7 +147,9 @@
             }
           }
         }
-        console.log(this.weights);
+        console.log(this.weights.map(function(n) {
+          return Math.round(n * 100) / 100;
+        }));
         this.x = LF.x;
         this.y = LF.y;
         this.x0 = LF.x;

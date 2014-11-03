@@ -123,7 +123,8 @@ jQuery ($) ->
           if Math.random() > 0.95
             this.weights[i] = rand(6)
             console.log 'MUTATION :D'
-      console.log this.weights
+      console.log this.weights.map (n) -> 
+        return Math.round(n*100)/100
       this.x = LF.x
       this.y = LF.y
       this.x0 = LF.x
