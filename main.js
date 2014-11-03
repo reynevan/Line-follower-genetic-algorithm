@@ -141,8 +141,8 @@
         } else {
           this.weights = weights;
           for (i = _i = 0, _ref = this.weights.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-            if (Math.random() > 0.9) {
-              this.weights[i] += rand(1);
+            if (Math.random() > 0.95) {
+              this.weights[i] = rand(6);
             }
           }
         }
@@ -199,7 +199,7 @@
             ctx.fillRect(x0, y0, 1, 1);
             ctx.fillRect(x01, y01, 1, 1);
             if (i === center) {
-              this.penalty += 1;
+              this.penalty += 2;
             }
           } else {
             this.sensors[i] = 0;

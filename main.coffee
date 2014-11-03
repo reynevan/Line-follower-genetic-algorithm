@@ -120,8 +120,8 @@ jQuery ($) ->
       else
         this.weights = weights
         for i in [0...this.weights.length]
-          if Math.random() > 0.9
-            this.weights[i]+=rand(1)
+          if Math.random() > 0.95
+            this.weights[i] = rand(6)
       this.x = LF.x
       this.y = LF.y
       this.x0 = LF.x
@@ -173,7 +173,7 @@ jQuery ($) ->
           ctx.fillRect x0,y0,1,1
           ctx.fillRect x01,y01,1,1
           if i == center
-            this.penalty += 1
+            this.penalty += 2
         else #biołe
           this.sensors[i] = 0
           whitePixels++
