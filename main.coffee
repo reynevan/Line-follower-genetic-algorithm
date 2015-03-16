@@ -120,7 +120,7 @@ jQuery ($) ->
       else
         this.weights = weights
         for i in [0...this.weights.length]
-          if Math.random() > 0.95
+          if Math.random() > 0.99
             this.weights[i] = rand(6)
             console.log 'MUTATION :D'
       console.log this.weights.map (n) -> 
@@ -226,8 +226,8 @@ jQuery ($) ->
           last.move()
         else
           population++
-          generation = Math.ceil(population/inPopulation)
-          $('.info').text('Generation:'+generation+' Individual:'+population%inPopulation)
+          generation+=1 if !(population%inPopulation)
+          $('.info').text('Generation:'+generation+' Individual:'+(population%inPopulation))
           if generation > 1
             errsum = 0
             worst = 0

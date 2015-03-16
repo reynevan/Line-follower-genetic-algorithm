@@ -141,7 +141,7 @@
         } else {
           this.weights = weights;
           for (i = _i = 0, _ref = this.weights.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-            if (Math.random() > 0.95) {
+            if (Math.random() > 0.99) {
               this.weights[i] = rand(6);
               console.log('MUTATION :D');
             }
@@ -270,8 +270,10 @@
             return last.move();
           } else {
             population++;
-            generation = Math.ceil(population / inPopulation);
-            $('.info').text('Generation:' + generation + ' Individual:' + population % inPopulation);
+            if (!(population % inPopulation)) {
+              generation += 1;
+            }
+            $('.info').text('Generation:' + generation + ' Individual:' + (population % inPopulation));
             if (generation > 1) {
               errsum = 0;
               worst = 0;
