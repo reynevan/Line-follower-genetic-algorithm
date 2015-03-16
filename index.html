@@ -13,18 +13,24 @@
         <canvas id = "can" width = "800" height = "800"></canvas>
       </div>
       <div class='col-sm-4'>
+        <div>
+        1. Draw a track<br/>
+        2. Place line follower<br/>
+        3. Click 'evolve' and watch how line follower is getting better with every generation
+        </div>
         <div class='configs'>
           <button id='btn-draw' class='btn btn-primary col-sm-7'>Draw track</button>
+          <p class = 'col-sm-7'>Track should be closed</p>
           <button id='btn-place' class='btn btn-danger col-sm-7'>Place linefollower!</button>
-          <p class = 'col-sm-7'>Click on canvas to place line follower, click second time to set its initial orientation</p>
+          <p class = 'col-sm-7'>Click on the canvas to place a line follower, click second time to set its initial orientation</p>
           <label class='col-sm-7'>Population of generation:</label><input id='population' type='number' class='col-sm-4' value='10'>
           <button id='btn-start' class='btn btn-success col-sm-7'>EVOLVE!</button>
           <label class='col-sm-7'>Evolve indefinitely</label><input id = 'infinity' type='checkbox' class = 'col-sm-2' checked>
           <button id='btn-pause' class='btn btn-success col-sm-7'>pause</button>
           <button id='btn-next' class='btn btn-danger col-sm-7'>next</button>
-          <p class = 'col-sm-7'>If process is stuck, click this button</p>
+          <p class = 'col-sm-7'>If process is stuck, click 'next' button</p>
           <div class='info col-sm-7'>
-            Generation: 1 Population: 1
+            Generation:1 Individual:1
           </div>
         </div>
       </div>
